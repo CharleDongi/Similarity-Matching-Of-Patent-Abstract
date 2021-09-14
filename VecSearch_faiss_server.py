@@ -462,9 +462,6 @@ def HttpServer (args):
             return jsonify(res)
 
         # 查询并返回结果, 结果需要使用json.loads()转为list
-        # 返回格式：[D,I,V]
-        # 样例： "values": "[[1.5547459e-16, 0.0006377562], [1, 15773]]"
-        # 增加了向量结果，可以选择输出；2020/9/7
         D, I, V = vs.search(q, top=top_n, nprobe=top_n) #, index=index
         value = [D.tolist(), I.tolist()]
 
@@ -499,14 +496,12 @@ def HttpServer (args):
 
 
 if __name__ == '__main__':
-    #################################################################################################
     # 指定日志
     logging.basicConfig(level = logging.DEBUG,
                         format='[%(asctime)s] %(filename)s [line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename= os.path.join('app.log'),
                         filemode='a')
-    #################################################################################################
     # 定义一个StreamHandler，将 INFO 级别或更高的日志信息打印到标准错误，并将其添加到当前的日志处理对象#
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
@@ -514,17 +509,13 @@ if __name__ == '__main__':
     formatter = logging.Formatter('[%(asctime)s]%(levelname)s %(message)s')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
-    #################################################################################################
-
     parser = argparse.ArgumentParser(description= ('faiss向量搜索服务 V-%s' % gblVersion) )
-    parser.add_argument('-npy', default='vector.npy', type=str, help='向量数据文件名,默认vector.npy')
-    parser.add_argument('-datfile', default='test.txt', type=str, help='文本数据文件名')  #required=True,
-    parser.add_argument('-port', default=7800, type=int, help='监听端口，默认7800')
-    parser.add_argument('-metric', default='INNER_PRODUCT', choices=['L2','INNER_PRODUCT'], type=str, 
-                    help='计算方法:L2=欧式距离；INNER_PRODUCT=向量内积(默认)')
-    parser.add_argument('-debug', default=0, type=int, help='是否调试模式，默认=0')
-    parser.add_argument('-gpu', default=-1, type=int, 
-        help='使用GPU,-1=不使用（默认），0=使用第1个，>0=使用全部')
+    parser.add_argument('-npy', default='vector.npy', type=str)
+    parser.add_argument('-datfile', default='test.txt', type=str)  #required=True,
+    parser.add_argument('-port', default=7800, type=int)
+    parser.add_argument('-metric', default='INNER_PRODUCT', choices=['L2','INNER_PRODUCT'], type=str)
+    parser.add_argument('-debug', default=0, type=int)
+    parser.add_argument('-gpu', default=-1, type=int)
 
     args = parser.parse_args()
     if not os.path.exists(args.npy):
